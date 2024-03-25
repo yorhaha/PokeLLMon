@@ -101,7 +101,8 @@ class LLMPlayer(Player):
     def __init__(self,
                  battle_format,
                  api_key="",
-                 backend="gpt-4-1106-preview",
+                 api_base="",
+                 model="gpt-4-1106-preview",
                  temperature=0.8,
                  prompt_algo="io",
                  log_dir=None,
@@ -120,10 +121,11 @@ class LLMPlayer(Player):
         self._battle_last_action : Dict[AbstractBattle, Dict] = {}
         self.completion_tokens = 0
         self.prompt_tokens = 0
-        self.backend = backend
+        self.model = model
         self.temperature = temperature
         self.log_dir = log_dir
         self.api_key = api_key
+        self.api_base = api_base
         self.prompt_algo = prompt_algo
         self.gen = GenData.from_format(battle_format)
         with open("./poke_env/data/static/moves/moves_effect.json", "r") as f:
@@ -144,7 +146,7 @@ class LLMPlayer(Player):
         self.HP_FRACTION_COEFICIENT = 0.4
 
     def chatgpt(self, system_prompt, user_prompt, model, temperature=0.7, json_format=False, seed=None, stop=[], max_tokens=200) -> str:
-        client = OpenAI(api_key=self.api_key)
+        client = OpenAI(api_key=self.api_key, base_url=self.api_base)
         if json_format:
             response = client.chat.completions.create(
                 response_format={"type": "json_object"},
@@ -703,8 +705,8 @@ class LLMPlayer(Player):
         state_prompt_tot_1 = state_prompt + constraint_prompt_tot_1
         state_prompt_tot_2 = state_prompt + constraint_prompt_tot_2
 
-        print("===================")
-        print(state_prompt)
+        # print("===================")
+        # print(state_prompt)
 
         if self.prompt_algo == "io":
             next_action = None
@@ -712,7 +714,7 @@ class LLMPlayer(Player):
                 try:
                     llm_output = self.chatgpt(system_prompt=system_prompt,
                                               user_prompt=state_prompt_io,
-                                              model=self.backend,
+                                              model=self.model,
                                               temperature=self.temperature,
                                               max_tokens=100,
                                               # stop=["reason"],
@@ -742,7 +744,7 @@ class LLMPlayer(Player):
                 try:
                     llm_output1 = self.chatgpt(system_prompt=system_prompt,
                                               user_prompt=state_prompt_io,
-                                              model=self.backend,
+                                              model=self.model,
                                               temperature=self.temperature,
                                               max_tokens=100,
                                               json_format=True)
@@ -756,7 +758,7 @@ class LLMPlayer(Player):
                 try:
                     llm_output2 = self.chatgpt(system_prompt=system_prompt,
                                               user_prompt=state_prompt_io,
-                                              model=self.backend,
+                                              model=self.model,
                                               temperature=self.temperature,
                                               max_tokens=100,
                                               json_format=True)
@@ -782,7 +784,7 @@ class LLMPlayer(Player):
                         try:
                             llm_output3 = self.chatgpt(system_prompt=system_prompt,
                                                        user_prompt=state_prompt_io,
-                                                       model=self.backend,
+                                                       model=self.model,
                                                        temperature=self.temperature,
                                                        max_tokens=100,
                                                        json_format=True)
@@ -814,7 +816,7 @@ class LLMPlayer(Player):
                 try:
                     llm_output = self.chatgpt(system_prompt=system_prompt,
                                               user_prompt=state_prompt_cot,
-                                              model=self.backend,
+                                              model=self.model,
                                               temperature=self.temperature,
                                               max_tokens=500,
                                               # stop=["reason"],
@@ -843,7 +845,7 @@ class LLMPlayer(Player):
                 try:
                     llm_output1 = self.chatgpt(system_prompt=system_prompt,
                                                user_prompt=state_prompt_tot_1,
-                                               model=self.backend,
+                                               model=self.model,
                                                temperature=self.temperature,
                                                max_tokens=200,
                                                json_format=True)
@@ -852,14 +854,14 @@ class LLMPlayer(Player):
                 except:
                     continue
 
-            if llm_output1 is "":
+            if llm_output1 == "":
                 return self.choose_max_damage_move(battle)
 
             for i in range(2):
                 try:
                     llm_output2 = self.chatgpt(system_prompt=system_prompt,
                                                user_prompt=state_prompt_tot_2.replace("[OPTIONS]", llm_output1),
-                                               model=self.backend,
+                                               model=self.model,
                                                temperature=self.temperature,
                                                max_tokens=100,
                                                json_format=True)

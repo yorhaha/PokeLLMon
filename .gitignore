@@ -1,2 +1,6 @@
 .idea/*
 .DS_Store
+.env
+.vscode/
+node_modules/
+battle_log/
