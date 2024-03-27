@@ -13,7 +13,12 @@ from poke_env.player import LLMPlayer, SimpleHeuristicsPlayer
 load_dotenv()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model", type=str, default="gpt-4-0125-preview", choices=["gpt-3.5-turbo-0125", "gpt-4-1106-preview", "gpt-4-0125-preview"])
+parser.add_argument(
+    "--model",
+    type=str,
+    default="gpt-4-0125-preview",
+    choices=["gpt-3.5-turbo-0125", "gpt-4-1106-preview", "gpt-4-0125-preview", "Llama-2-7b-chat-hf"],
+)
 parser.add_argument("--temperature", type=float, default=0.1)
 parser.add_argument("--prompt_algo", default="sc", choices=["io", "sc", "cot", "tot"])
 # parser.add_argument("--log_dir", type=str, default="./battle_log/pokellmon_vs_bot")
@@ -26,21 +31,23 @@ args = parser.parse_args()
 
 log_dir = f"./battle_log/pokellmon_vs_bot/{args.model}_{args.temperature}_{args.prompt_algo}"
 
+
 async def main():
 
     heuristic_player = SimpleHeuristicsPlayer(battle_format="gen8randombattle")
 
     os.makedirs(log_dir, exist_ok=True)
-    llm_player = LLMPlayer(battle_format="gen8randombattle",
-                           api_key=args.api_key,
-                           api_base=args.api_base,
-                           model=args.model,
-                           temperature=args.temperature,
-                           prompt_algo=args.prompt_algo,
-                           log_dir=log_dir,
-                           account_configuration=AccountConfiguration(args.username, args.password),
-                           save_replays=log_dir
-                           )
+    llm_player = LLMPlayer(
+        battle_format="gen8randombattle",
+        api_key=args.api_key,
+        api_base=args.api_base,
+        model=args.model,
+        temperature=args.temperature,
+        prompt_algo=args.prompt_algo,
+        log_dir=log_dir,
+        account_configuration=AccountConfiguration(args.username, args.password),
+        save_replays=log_dir,
+    )
 
     # dynamax is disabled for local battles.
     heuristic_player._dynamax_disable = True
