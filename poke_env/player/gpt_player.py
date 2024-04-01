@@ -727,7 +727,7 @@ class LLMPlayer(Player):
                                             "user_prompt": state_prompt_io,
                                             "llm_output": llm_output,
                                             "battle_tag": battle.battle_tag
-                                            }) + "\n")
+                                            }, ensure_ascii=False) + "\n")
                     break
                 except:
                     continue
@@ -776,7 +776,7 @@ class LLMPlayer(Player):
                                             "llm_output1": llm_output1,
                                             "llm_output2": llm_output2,
                                             "battle_tag": battle.battle_tag
-                                            }) + "\n")
+                                            }, ensure_ascii=False) + "\n")
                     return next_action1
                 else:
                     next_action3 = None
@@ -802,7 +802,7 @@ class LLMPlayer(Player):
                                                 "llm_output2": llm_output2,
                                                 "llm_output3": llm_output3,
                                                 "battle_tag": battle.battle_tag
-                                                }) + "\n")
+                                                }, ensure_ascii=False) + "\n")
                         return next_action3
                     else:
                         return next_action1
@@ -829,7 +829,7 @@ class LLMPlayer(Player):
                                             "user_prompt": state_prompt_cot,
                                             "llm_output": llm_output,
                                             "battle_tag": battle.battle_tag
-                                            }) + "\n")
+                                            }, ensure_ascii=False) + "\n")
                     break
                 except:
                     continue
@@ -876,7 +876,7 @@ class LLMPlayer(Player):
                                             "llm_output1": llm_output1,
                                             "llm_output2": llm_output2,
                                             "battle_tag": battle.battle_tag
-                                            }) + "\n")
+                                            }, ensure_ascii=False) + "\n")
                     break
                 except:
                     continue

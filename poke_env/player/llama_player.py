@@ -115,7 +115,7 @@ class LLAMAPlayer(LLMPlayer):
         if next_action:
             print("LLM output:", llm_output)
             with open(f"{self.log_dir}/output.jsonl", "a") as f:
-                f.write(json.dumps({"prompt": user_prompt, "llm_output": llm_output}) + "\n")
+                f.write(json.dumps({"prompt": user_prompt, "llm_output": llm_output}, ensure_ascii=False) + "\n")
         else:
             self.except_cnt += 1
             next_action = self.choose_max_damage_move(battle)
